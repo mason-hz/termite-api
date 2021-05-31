@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "root",
+    "database": "with_draw_db",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "password": "huangzhe"
+  },
+  "test": {
+    "username": "root",
+    "password": "huangzhe",
+    "database": "database_test",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "mason",
+    "password": "123456",
+    "database": "with_draw_db",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}

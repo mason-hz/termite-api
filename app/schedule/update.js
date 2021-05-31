@@ -3,7 +3,6 @@
 const { KovanSVaultClient } = require('../config/clients');
 const { queryFundPools } = require('../config/queries');
 const { SVaultNetValueABI, fundPoolABI, PriceViewABI } = require('../abis');
-// const BigNumber = require('bignumber.js');
 const { SVaultNetValue, PriceView } = require('../constants');
 const ContractBasic = require('../utils/contract');
 const {

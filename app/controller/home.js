@@ -36,9 +36,10 @@ class HomeController extends Controller {
     try {
       const { limit, offset, id } = ctx.request.query;
       const query = {
+        order: [['time', 'DESC']],
         limit: toInt(limit),
         offset: toInt(offset),
-        where: { address: id },
+        ...(id ? { where: { address: id } } : {}),
       };
       this.sendBody(await ctx.model.fundPool.findAll(query));
     } catch (error) {

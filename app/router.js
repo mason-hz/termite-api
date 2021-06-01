@@ -6,20 +6,25 @@ require('../config/date');
 module.exports = app => {
   const { router, controller } = app;
   const { STRING, INTEGER, DATE } = app.Sequelize;
-  const fundPool = app.model.define('fund_pools', {
-    id: { type: INTEGER, primaryKey: true, autoIncrement: true },
-    created_at: DATE,
-    updated_at: DATE,
-    address: STRING,
-    chain_id: STRING,
-    time: STRING,
-    apy: STRING,
-    total_deposit: STRING,
-    net_value: STRING,
-    total_profit: STRING,
-    day_profit: STRING,
-  });
+  const fundPool = app.model.define(
+    'fund_pools',
+    {
+      id: { type: INTEGER, primaryKey: true, autoIncrement: true },
+      createdAt: DATE,
+      updatedAt: DATE,
+      address: STRING,
+      chainId: STRING,
+      time: STRING,
+      apy: STRING,
+      totalDeposit: STRING,
+      netValue: STRING,
+      totalProfit: STRING,
+      dayProfit: STRING,
+    },
+    { chainId: 'chain_id', underscored: true }
+  );
   app.model.fundPool = fundPool;
+  app.model.sequelize = app.Sequelize;
   router.get('/api/getAll', controller.home.getAll);
   router.get('/api/deleteDayData', controller.home.delete);
   router.get('/api/fundPoolDaySnapshot', controller.home.fundPoolDaySnapshot);

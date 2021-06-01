@@ -78,6 +78,10 @@ function getUTCDayTime() {
 function getUTCYesterdayTime() {
   return getUTCDayTime() - 86400000;
 }
+function getUTCWeekAgoTime() {
+  return getUTCDayTime() - 86400000 * 7;
+}
+
 function getFundPoolAPY(preNetValue, netValue, apyDays = 1) {
   let bigPre = new BigNumber(preNetValue);
   const bigC = new BigNumber(netValue);
@@ -100,6 +104,7 @@ function getDayProfit(pre, c) {
   return bigC.minus(pre).toFixed();
 }
 module.exports = {
+  getUTCWeekAgoTime,
   divDecimals,
   getUTCDayTime,
   getUTCYesterdayTime,

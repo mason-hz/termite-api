@@ -14,6 +14,7 @@ const {
   getFundPoolAPY,
   getDayProfit,
   getUTCDayTime,
+  getUTCWeekAgoTime,
 } = require('../utils');
 const Subscription = require('egg').Subscription;
 
@@ -47,80 +48,88 @@ class UpdateCache extends Subscription {
       ]);
       const { fundPools } = result.data;
       if (fundPools) {
-        Promise.all(
-          fundPools.map(async i => {
-            const { id, token } = i || {};
-            const { decimals, id: tokenAddress } = token || {};
-            const contract = new ContractBasic({
-              contractABI: fundPoolABI,
-              contractAddress: id,
-            });
-            const [totalTokenSupply, totalShares, price] = await Promise.all([
-              contract.callViewMethod('totalTokenSupply'),
-              contract.callViewMethod('totalShares'),
-              priceViewContract.callViewMethod('getPriceInUSDT', [
-                tokenAddress,
-              ]),
-            ]);
-            const netValues = getCurrentNetValue(values, id);
+        fundPools.map(async i => {
+          const { id, token } = i || {};
+          const { decimals, id: tokenAddress } = token || {};
+          const contract = new ContractBasic({
+            contractABI: fundPoolABI,
+            contractAddress: id,
+          });
+          const [totalTokenSupply, totalShares, price] = await Promise.all([
+            contract.callViewMethod('totalTokenSupply'),
+            contract.callViewMethod('totalShares'),
+            priceViewContract.callViewMethod('getPriceInUSDT', [tokenAddress]),
+          ]);
+          const netValues = getCurrentNetValue(values, id);
 
-            // 收益
-            const profit = divDecimals(
-              getProfit(
-                netValues ? netValues.totalTokens : 0,
-                totalTokenSupply
-              ),
-              decimals
-            ).toFixed();
-            // 净值
-            const netValue = getNetValue(
-              netValues ? netValues.totalTokens : 0,
-              totalShares
-            ).toFixed();
-            // 价格
-            const tokenPrice = divDecimals(price, 6);
-            console.log(price, '=============price');
-            console.log(totalTokenSupply, '=======totalTokenSupply');
-            console.log(tokenAddress, id, '=======tokenAddress');
-            // token总锁仓量
-            const totalValueLocked = divDecimals(totalTokenSupply, decimals);
-            // 锁仓量 $
-            const totalDeposit = tokenPrice.times(totalValueLocked).toFixed();
-            const time = getUTCDayTime();
-            const info = {
+          // 收益
+          const profit = divDecimals(
+            getProfit(netValues ? netValues.totalTokens : 0, totalTokenSupply),
+            decimals
+          ).toFixed();
+          // 净值
+          const netValue = getNetValue(
+            netValues ? netValues.totalTokens : 0,
+            totalShares
+          ).toFixed();
+          // 价格
+          const tokenPrice = divDecimals(price, 6);
+          console.log(price, '=============price');
+          console.log(totalTokenSupply, '=======totalTokenSupply');
+          console.log(tokenAddress, id, '=======tokenAddress');
+          // token总锁仓量
+          const totalValueLocked = divDecimals(totalTokenSupply, decimals);
+          // 锁仓量 $
+          const totalDeposit = tokenPrice.times(totalValueLocked).toFixed();
+          const time = getUTCDayTime();
+          const info = {
+            time,
+            address: id,
+            chain_id: '42',
+            total_deposit: totalDeposit,
+            net_value: netValue,
+            total_profit: profit,
+          };
+          const yesterdayFundPool = await ctx.model.fundPool.findOne({
+            where: {
+              time: getUTCYesterdayTime(),
+              address: id,
+              chain_id: '42',
+            },
+          });
+          if (yesterdayFundPool !== null) {
+            const weekAgoFundPool = await ctx.model.fundPool.findOne({
+              where: {
+                time: getUTCWeekAgoTime(),
+                address: id,
+                chain_id: '42',
+              },
+            });
+            console.log(weekAgoFundPool, '======weekAgoFundPool');
+            // 一周 apy
+            if (weekAgoFundPool !== null) {
+              info.apy = getFundPoolAPY(weekAgoFundPool.net_value, netValue, 7);
+              // 一天 apy
+            } else {
+              info.apy = getFundPoolAPY(yesterdayFundPool.net_value, netValue);
+            }
+
+            info.day_profit = getDayProfit(
+              yesterdayFundPool.total_profit,
+              profit
+            );
+          }
+          const now = await ctx.model.fundPool.findOne({
+            where: {
               time,
               address: id,
               chain_id: '42',
-              total_deposit: totalDeposit,
-              net_value: netValue,
-              total_profit: profit,
-            };
-            const dayTime = getUTCYesterdayTime();
-            const fundPool = await ctx.model.fundPool.findOne({
-              where: {
-                time: dayTime,
-                address: id,
-                chain_id: '42',
-              },
-            });
-            if (fundPool !== null) {
-              info.apy = getFundPoolAPY(fundPool.net_value, netValue);
-              info.day_profit = getDayProfit(fundPool.total_profit, profit);
-            }
-            const now = await ctx.model.fundPool.findOne({
-              where: {
-                time,
-                address: id,
-                chain_id: '42',
-              },
-            });
-            if (now === null) {
-              await ctx.model.fundPool.create(info);
-            } else {
-              await now.update(info);
-            }
-          })
-        );
+            },
+          });
+          if (now === null) {
+            await ctx.model.fundPool.create(info);
+          }
+        });
       }
     } catch (error) {
       console.log(error, '======error');

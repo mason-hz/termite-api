@@ -20,7 +20,7 @@ module.exports = app => {
     day_profit: STRING,
   });
   app.model.fundPool = fundPool;
-  router.get('/api/getProof', controller.home.index);
   router.get('/api/getAll', controller.home.getAll);
-  router.get('/api/delete', controller.home.delete);
+  router.get('/api/deleteDayData', controller.home.delete);
+  router.get('/api/fundPoolDaySnapshot', controller.home.fundPoolDaySnapshot);
 };

@@ -1,69 +1,12 @@
 'use strict';
-const merkle = require('./prod');
 const Controller = require('../core/baseController');
-const {
-  utils: { isAddress, getAddress },
-} = require('ethers');
 const { getUTCYesterdayTime, getUTCDayTime } = require('../utils');
-// const BigNumber = require('bignumber.js');
+function toInt(str) {
+  if (typeof str === 'number') return str;
+  if (!str) return str;
+  return parseInt(str, 10) || 0;
+}
 class HomeController extends Controller {
-  async index() {
-    const ctx = this.ctx;
-    const { startTime, endTime } = this.config;
-    try {
-      const { chainId = '1', account } = ctx.request.query;
-      if (!isAddress(account)) {
-        throw new Error(`Found invalid address: ${account}`);
-      }
-      const parsed = getAddress(account);
-      const { proof, index, amount } = merkle.claims[parsed] || {};
-      const nowTine = new Date().getTime();
-      let timeUp = 1;
-      // 结束了
-      if (nowTine > endTime) {
-        timeUp = 2;
-        // 还没开始
-      } else if (nowTine < startTime) {
-        timeUp = 3;
-      }
-      if (proof) {
-        this.sendBody({
-          index,
-          proof,
-          timeUp,
-          amount,
-          chainId,
-          endTime,
-          startTime,
-          account: parsed,
-        });
-      } else {
-        this.error({
-          message: 'no account',
-          code: 1,
-        });
-      }
-      const user = await ctx.model.Accounts.findOne({
-        where: {
-          account,
-          chain_id: chainId,
-        },
-      });
-      const info = {
-        time: new Date().getTime(),
-        account,
-        chain_id: chainId,
-        target: proof ? 1 : 0,
-      };
-      if (!user) {
-        await ctx.model.Accounts.create(info);
-      } else {
-        user.update(info);
-      }
-    } catch (error) {
-      this.error(error);
-    }
-  }
   async getAll() {
     const ctx = this.ctx;
     try {
@@ -83,7 +26,21 @@ class HomeController extends Controller {
           time,
         },
       });
-      this.sendBody({ aa: 'aa' });
+      this.sendBody();
+    } catch (error) {
+      this.error(error);
+    }
+  }
+  async fundPoolDaySnapshot() {
+    const ctx = this.ctx;
+    try {
+      const { limit, offset, id } = ctx.request.query;
+      const query = {
+        limit: toInt(limit),
+        offset: toInt(offset),
+        where: { address: id },
+      };
+      this.sendBody(await ctx.model.fundPool.findAll(query));
     } catch (error) {
       this.error(error);
     }

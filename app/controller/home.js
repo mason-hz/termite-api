@@ -4,7 +4,7 @@ const Controller = require('../core/baseController');
 const {
   utils: { isAddress, getAddress },
 } = require('ethers');
-const { getUTCYesterdayTime } = require('../utils');
+const { getUTCYesterdayTime, getUTCDayTime } = require('../utils');
 // const BigNumber = require('bignumber.js');
 class HomeController extends Controller {
   async index() {
@@ -74,16 +74,16 @@ class HomeController extends Controller {
       this.error(error);
     }
   }
-  async getConfig() {
+  async delete() {
+    const ctx = this.ctx;
     try {
-      const { startTime, endTime } = this.config;
-      this.sendBody({
-        startTime,
-        endTime,
-        nowTime: new Date().getTime(),
-        formatStartTime: new Date(startTime).format('yyyy-MM-dd hh:mm:ss'),
-        formatEndTime: new Date(endTime).format('yyyy-MM-dd hh:mm:ss'),
+      const time = getUTCDayTime();
+      await ctx.model.fundPool.destroy({
+        where: {
+          time,
+        },
       });
+      this.sendBody({ aa: 'aa' });
     } catch (error) {
       this.error(error);
     }

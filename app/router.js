@@ -22,5 +22,5 @@ module.exports = app => {
   app.model.fundPool = fundPool;
   router.get('/api/getProof', controller.home.index);
   router.get('/api/getAll', controller.home.getAll);
-  router.get('/api/getConfig', controller.home.getConfig);
+  router.get('/api/delete', controller.home.delete);
 };

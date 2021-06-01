@@ -79,6 +79,9 @@ class UpdateCache extends Subscription {
             ).toFixed();
             // 价格
             const tokenPrice = divDecimals(price, 6);
+            console.log(price, '=============price');
+            console.log(totalTokenSupply, '=======totalTokenSupply');
+            console.log(tokenAddress, id, '=======tokenAddress');
             // token总锁仓量
             const totalValueLocked = divDecimals(totalTokenSupply, decimals);
             // 锁仓量 $

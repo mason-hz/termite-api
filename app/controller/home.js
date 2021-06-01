@@ -68,13 +68,7 @@ class HomeController extends Controller {
     const ctx = this.ctx;
     try {
       const dayTime = getUTCYesterdayTime();
-      const fundPool = await ctx.model.fundPool.findOne({
-        where: {
-          // time: dayTime,
-          address: '0xcbdbbe645872ce2c5d65df08fd260b9666695c7b',
-          chain_id: '42',
-        },
-      });
+      const fundPool = await ctx.model.fundPool.findAll();
       this.sendBody({ dayTime, fundPool });
     } catch (error) {
       this.error(error);

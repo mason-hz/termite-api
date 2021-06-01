@@ -96,7 +96,7 @@ class UpdateCache extends Subscription {
             const fundPool = await ctx.model.fundPool.findOne({
               where: {
                 time: dayTime,
-                address: '0xcbdbbe645872ce2c5d65df08fd260b9666695c7b',
+                address: id,
                 chain_id: '42',
               },
             });
@@ -113,6 +113,8 @@ class UpdateCache extends Subscription {
             });
             if (now === null) {
               await ctx.model.fundPool.create(info);
+            } else {
+              await ctx.model.fundPool.update(info);
             }
           })
         );

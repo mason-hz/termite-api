@@ -20,7 +20,7 @@ const Subscription = require('egg').Subscription;
 class UpdateCache extends Subscription {
   static get schedule() {
     return {
-      // interval: '5s', // 1 分钟间隔
+      // interval: '1m', // 1 分钟间隔
       type: 'all',
       immediate: true, // 项目启动就执行一次定时任务
       cron: '0 0 0/6 * * *', // 每天0点开始每6小时执行一次
@@ -114,7 +114,7 @@ class UpdateCache extends Subscription {
             if (now === null) {
               await ctx.model.fundPool.create(info);
             } else {
-              await ctx.model.fundPool.update(info);
+              await now.update(info);
             }
           })
         );

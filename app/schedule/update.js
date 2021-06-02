@@ -63,16 +63,6 @@ class UpdateCache extends Subscription {
           const { id, token, startupTime } = i || {};
           const { decimals, id: tokenAddress } = token || {};
           const time = getUTCDayTime();
-          const now = await ctx.model.fundPool.findOne({
-            where: {
-              time,
-              address: id,
-              chainId: '42',
-            },
-          });
-          if (now !== null) {
-            return;
-          }
           const contract = new ContractBasic({
             contractABI: fundPoolABI,
             contractAddress: id,
@@ -169,6 +159,16 @@ class UpdateCache extends Subscription {
               yesterdayFundPool.totalProfit,
               profit
             );
+          }
+          const now = await ctx.model.fundPool.findOne({
+            where: {
+              time,
+              address: id,
+              chainId: '42',
+            },
+          });
+          if (now !== null) {
+            return;
           }
           // 插入数据库
           await ctx.model.fundPool.create(info);

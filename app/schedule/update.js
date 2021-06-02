@@ -17,6 +17,7 @@ const {
 } = require('../utils');
 const Subscription = require('egg').Subscription;
 const { web3 } = require('../config/contract');
+let wait;
 class UpdateCache extends Subscription {
   static get schedule() {
     return {
@@ -28,6 +29,8 @@ class UpdateCache extends Subscription {
   }
 
   async subscribe() {
+    if (wait) return;
+    wait = true;
     const ctx = this.ctx;
     try {
       const netValueContract = new ContractBasic({
@@ -174,6 +177,7 @@ class UpdateCache extends Subscription {
     } catch (error) {
       console.log(error, '======error');
     }
+    wait = false;
   }
 }
 

@@ -1,5 +1,7 @@
 'use strict';
 const Controller = require('../core/baseController');
+const { Op } = require('sequelize');
+
 const { getUTCYesterdayTime, getUTCDayTime } = require('../utils');
 function toInt(str) {
   if (typeof str === 'number') return str;
@@ -42,6 +44,30 @@ class HomeController extends Controller {
         ...(id ? { where: { address: id } } : {}),
       };
       this.sendBody(await ctx.model.fundPool.findAll(query));
+    } catch (error) {
+      this.error(error);
+    }
+  }
+  async allFundPoolDayAPY() {
+    const ctx = this.ctx;
+    try {
+      const { limit = '30' } = ctx.request.query;
+      const day = getUTCDayTime();
+      const query = {
+        order: [['time', 'DESC']],
+        where: { time: { [Op.gt]: day - 86400000 * toInt(limit) } },
+      };
+      const fundPools = await ctx.model.fundPool.findAll(query);
+      const obj = {};
+      if (Array.isArray(fundPools)) {
+        for (let i = 0, j = fundPools.length; i < j; i++) {
+          const element = fundPools[i];
+          const { address, apy, time } = element;
+          if (!obj[address]) obj[address] = [];
+          obj[element.address].push({ apy, time });
+        }
+      }
+      this.sendBody(obj);
     } catch (error) {
       this.error(error);
     }

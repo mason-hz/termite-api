@@ -85,16 +85,16 @@ class UpdateCache extends Subscription {
           const info = {
             time,
             address: id,
-            chain_id: '42',
-            total_deposit: totalDeposit,
-            net_value: netValue,
-            total_profit: profit,
+            chainId: '42',
+            totalDeposit,
+            netValue,
+            totalProfit: profit,
           };
           const yesterdayFundPool = await ctx.model.fundPool.findOne({
             where: {
               time: getUTCYesterdayTime(),
               address: id,
-              chain_id: '42',
+              chainId: '42',
             },
           });
           if (yesterdayFundPool !== null) {
@@ -102,20 +102,20 @@ class UpdateCache extends Subscription {
               where: {
                 time: getUTCWeekAgoTime(),
                 address: id,
-                chain_id: '42',
+                chainId: '42',
               },
             });
             console.log(weekAgoFundPool, '======weekAgoFundPool');
             // 一周 apy
             if (weekAgoFundPool !== null) {
-              info.apy = getFundPoolAPY(weekAgoFundPool.net_value, netValue, 7);
+              info.apy = getFundPoolAPY(weekAgoFundPool.netValue, netValue, 7);
               // 一天 apy
             } else {
-              info.apy = getFundPoolAPY(yesterdayFundPool.net_value, netValue);
+              info.apy = getFundPoolAPY(yesterdayFundPool.netValue, netValue);
             }
 
-            info.day_profit = getDayProfit(
-              yesterdayFundPool.total_profit,
+            info.dayProfit = getDayProfit(
+              yesterdayFundPool.totalProfit,
               profit
             );
           }
@@ -123,7 +123,7 @@ class UpdateCache extends Subscription {
             where: {
               time,
               address: id,
-              chain_id: '42',
+              chainId: '42',
             },
           });
           if (now === null) {

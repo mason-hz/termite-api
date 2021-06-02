@@ -28,4 +28,5 @@ module.exports = app => {
   router.get('/api/getAll', controller.home.getAll);
   router.get('/api/deleteDayData', controller.home.delete);
   router.get('/api/fundPoolDaySnapshot', controller.home.fundPoolDaySnapshot);
+  router.get('/api/allFundPoolDayAPY', controller.home.allFundPoolDayAPY);
 };

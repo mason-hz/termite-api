@@ -2,7 +2,16 @@
 const Controller = require('../core/baseController');
 const { Op } = require('sequelize');
 
-const { getUTCYesterdayTime, getUTCDayTime } = require('../utils');
+const {
+  getUTCDayTime,
+  getCurrentNetValue,
+  getNetValue,
+  getFundPoolAPY,
+} = require('../utils');
+const { web3 } = require('../config/contract');
+const ContractBasic = require('../utils/contract');
+const { SVaultNetValueABI, fundPoolABI } = require('../abis');
+const { SVaultNetValue, blockDay } = require('../constants');
 function toInt(str) {
   if (typeof str === 'number') return str;
   if (!str) return str;
@@ -12,9 +21,69 @@ class HomeController extends Controller {
   async getAll() {
     const ctx = this.ctx;
     try {
-      const dayTime = getUTCYesterdayTime();
       const fundPool = await ctx.model.fundPool.findAll();
-      this.sendBody({ dayTime, fundPool });
+      this.sendBody(fundPool);
+    } catch (error) {
+      this.error(error);
+    }
+  }
+  async getFundPool() {
+    const ctx = this.ctx;
+    try {
+      const {
+        id = '0x3246183aca412fc8ee374c3e39a45759fc113369',
+        startupTime = '1622109368',
+      } = ctx.request.query;
+      const dayTime = getUTCDayTime();
+      const latestBlockNumber = await web3.eth.getBlockNumber();
+      const netValueContract = new ContractBasic({
+        contractABI: SVaultNetValueABI,
+        contractAddress: SVaultNetValue,
+      });
+      // 七天前区块
+      const preBlock = latestBlockNumber - 7 * blockDay;
+      const contract = new ContractBasic({
+        contractABI: fundPoolABI,
+        contractAddress: id,
+      });
+      const [values, preValues, totalShares, preTotalShares] =
+        await Promise.all([
+          netValueContract.callViewMethod('getNetValues'),
+          netValueContract.callViewMethod('getNetValues', undefined, {
+            defaultBlock: preBlock,
+          }),
+          contract.callViewMethod('totalShares'),
+          contract.callViewMethod('totalShares', undefined, {
+            defaultBlock: preBlock,
+          }),
+        ]);
+      const netValues = getCurrentNetValue(values, id);
+      const preNetValues = getCurrentNetValue(preValues, id);
+
+      // 净值
+      const netValue = getNetValue(
+        netValues ? netValues.totalTokens : 0,
+        totalShares
+      ).toFixed();
+      // 上期净值
+      const preNetValue = getNetValue(
+        preNetValues ? preNetValues.totalTokens : 0,
+        preTotalShares
+      ).toFixed();
+      const fundPoolAPY = getFundPoolAPY(preNetValue, netValue, 7, startupTime);
+      // const fundPool = await ctx.model.fundPool.findAll();
+      this.sendBody({
+        latestBlockNumber,
+        dayTime,
+        // fundPool,
+        totalShares,
+        preTotalShares,
+        netValues,
+        preNetValues,
+        netValue,
+        preNetValue,
+        fundPoolAPY,
+      });
     } catch (error) {
       this.error(error);
     }

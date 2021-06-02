@@ -2,7 +2,7 @@
 
 const config = {
   exploreUrl: 'https://kovan.etherscan.io/',
-  rpcUrl: 'https://kovan.infura.io/v3/7c746e03937a4f3085785ef7cb673db0',
+  rpcUrl: 'https://eth-kovan.alchemyapi.io/v2/xySGYPfffRK4wIUO1AqWgwgi2-Q2O1wy',
   apolloUrl: 'https://api.thegraph.com/subgraphs/name/zhxymh/svault-kovan',
 
   Controller: '0x4731E500F85eA8523959751D105a59425dcC6db8',

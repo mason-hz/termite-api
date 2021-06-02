@@ -13,6 +13,7 @@ function queryFundPools() {
         id
         token ${token}
         max
+        startupTime
       }
     }
   `;

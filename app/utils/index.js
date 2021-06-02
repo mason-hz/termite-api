@@ -82,7 +82,7 @@ function getUTCWeekAgoTime() {
   return getUTCDayTime() - 86400000 * 7;
 }
 
-function getFundPoolAPY(preNetValue, netValue, apyDays = 1) {
+function getFundPoolAPY(preNetValue, netValue, apyDays = 1, startupTime) {
   let bigPre = new BigNumber(preNetValue);
   const bigC = new BigNumber(netValue);
   if (bigPre.eq(0) || bigPre.isNaN()) {
@@ -90,6 +90,19 @@ function getFundPoolAPY(preNetValue, netValue, apyDays = 1) {
   }
   if (bigC.eq(0) || bigC.isNaN()) {
     return new BigNumber(0);
+  }
+  if (startupTime) {
+    const hours = new BigNumber(new Date().getTime() / 1000)
+      .minus(startupTime)
+      .div(3600)
+      .dp(0, BigNumber.ROUND_DOWN);
+    if (!hours.isNaN() && hours.div(24).lt(apyDays)) {
+      if (hours.lte(1)) {
+        apyDays = 1 / 24;
+      } else {
+        apyDays = hours.div(24).toNumber();
+      }
+    }
   }
   const difference = bigC.minus(bigPre);
 

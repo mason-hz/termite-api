@@ -21,11 +21,12 @@ module.exports = app => {
       totalProfit: STRING,
       dayProfit: STRING,
     },
-    { chainId: 'chain_id', underscored: true }
+    { underscored: true }
   );
   app.model.fundPool = fundPool;
   app.model.sequelize = app.Sequelize;
   router.get('/api/getAll', controller.home.getAll);
+  router.get('/api/getFundPool', controller.home.getFundPool);
   router.get('/api/deleteDayData', controller.home.delete);
   router.get('/api/fundPoolDaySnapshot', controller.home.fundPoolDaySnapshot);
   router.get('/api/allFundPoolDayAPY', controller.home.allFundPoolDayAPY);

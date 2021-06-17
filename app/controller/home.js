@@ -84,6 +84,7 @@ class HomeController extends Controller {
         preNetValue,
         fundPoolAPY,
         SVaultNetValue,
+        TERMITE_ENV: process.env.TERMITE_ENV,
       });
     } catch (error) {
       this.error(error);

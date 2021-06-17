@@ -5,12 +5,10 @@ const {
   InMemoryCache,
   createHttpLink,
 } = require('@apollo/client');
+const { apolloUrl } = require('../constants');
 const KovanSVaultClient = new ApolloClient({
-  // link: new HttpLink({
-  //   uri: 'https://api.thegraph.com/subgraphs/name/zhxymh/svault-kovan',
-  // }),
   link: createHttpLink({
-    uri: 'https://api.thegraph.com/subgraphs/name/zhxymh/svault-kovan',
+    uri: apolloUrl,
     fetch,
   }),
   cache: new InMemoryCache(),

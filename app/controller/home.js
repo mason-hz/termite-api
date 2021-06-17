@@ -83,6 +83,7 @@ class HomeController extends Controller {
         netValue,
         preNetValue,
         fundPoolAPY,
+        SVaultNetValue,
       });
     } catch (error) {
       this.error(error);

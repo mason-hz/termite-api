@@ -17,6 +17,7 @@ const config = {
 
   blockDay: 21600,
   blockPerYear: 21600 * 365,
+  fundPoolsDBName: 'fund_pools',
 };
 
 const previewConfig = {
@@ -26,6 +27,7 @@ const previewConfig = {
   Controller: '0x10Bb968006b1eF671dC9261C9477A5827c1ad69C',
   SVaultNetValue: '0xEf7D9773820371eE953c03d7eC62B7E41985ec8F',
   PriceView: '0x250d9e491c6cC11A9A413492a980FD638BF4145F',
+  fundPoolsDBName: 'preview_fund_pools',
 };
 
 module.exports = env === 'preview' ? previewConfig : config;

@@ -1,4 +1,7 @@
 'use strict';
+
+const { fundPoolsDBName } = require('./constants');
+
 require('../config/date');
 /**
  * @param {Egg.Application} app - egg application
@@ -7,7 +10,7 @@ module.exports = app => {
   const { router, controller } = app;
   const { STRING, INTEGER, DATE } = app.Sequelize;
   const fundPool = app.model.define(
-    'fund_pools',
+    fundPoolsDBName,
     {
       id: { type: INTEGER, primaryKey: true, autoIncrement: true },
       createdAt: DATE,

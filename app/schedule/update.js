@@ -159,6 +159,8 @@ class UpdateCache extends Subscription {
               yesterdayFundPool.totalProfit,
               profit
             );
+          } else {
+            info.apy = getFundPoolAPY(preNetValue, netValue, 7, startupTime);
           }
           const now = await ctx.model.fundPool.findOne({
             where: {

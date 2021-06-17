@@ -31,8 +31,8 @@ class HomeController extends Controller {
     const ctx = this.ctx;
     try {
       const {
-        id = '0x3246183aca412fc8ee374c3e39a45759fc113369',
-        startupTime = '1622109368',
+        id = '0xee69707feb63b799d018ad3bd9285d39eb7ca6ae',
+        startupTime = '1623836432',
       } = ctx.request.query;
       const dayTime = getUTCDayTime();
       const latestBlockNumber = await web3.eth.getBlockNumber();

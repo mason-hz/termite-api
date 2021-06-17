@@ -36,7 +36,7 @@
   "scripts": {
     "start": "egg-scripts start --port 9900 --daemon --title=egg-server-termite-api",
     "stop": "egg-scripts stop --title=egg-server-termite-api",
-    "start:preview": "egg-scripts start --port 9901 --daemon --title=egg-server-preview-termite-api",
+    "start:preview": "TERMITE_ENV=preview egg-scripts start --port 9901 --daemon --title=egg-server-preview-termite-api",
     "stop:preview": "egg-scripts stop --title=egg-server-preview-termite-api",
     "restart": "npm run stop && npm run start",
     "restart:preview": "npm run stop:preview && npm run start:preview",

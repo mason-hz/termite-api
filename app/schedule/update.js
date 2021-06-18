@@ -17,7 +17,6 @@ const {
 } = require('../utils');
 const Subscription = require('egg').Subscription;
 const { web3 } = require('../config/contract');
-let wait;
 class UpdateCache extends Subscription {
   static get schedule() {
     return {
@@ -29,8 +28,6 @@ class UpdateCache extends Subscription {
   }
 
   async subscribe() {
-    if (wait) return;
-    wait = true;
     const ctx = this.ctx;
     try {
       const netValueContract = new ContractBasic({
@@ -57,12 +54,12 @@ class UpdateCache extends Subscription {
           fetchPolicy: 'network-only',
         }),
       ]);
+      const time = getUTCDayTime();
       const { fundPools } = result.data;
       if (fundPools) {
         fundPools.map(async i => {
-          const { id, token, startupTime } = i || {};
+          const { id, token, startupTime, totalUserProfit } = i || {};
           const { decimals, id: tokenAddress } = token || {};
-          const time = getUTCDayTime();
           const contract = new ContractBasic({
             contractABI: fundPoolABI,
             contractAddress: id,
@@ -86,7 +83,10 @@ class UpdateCache extends Subscription {
           const profit = divDecimals(
             getProfit(netValues ? netValues.totalTokens : 0, totalTokenSupply),
             decimals
-          ).toFixed();
+          )
+            // 用户赎回收益
+            .plus(totalUserProfit || 0)
+            .toFixed();
           // 净值
           const netValue = getNetValue(
             netValues ? netValues.totalTokens : 0,
@@ -100,9 +100,6 @@ class UpdateCache extends Subscription {
 
           // 价格
           const tokenPrice = divDecimals(price, 6);
-          console.log(price, '=============price');
-          console.log(totalTokenSupply, '=======totalTokenSupply');
-          console.log(tokenAddress, id, '=======tokenAddress');
           // token总锁仓量
           const totalValueLocked = divDecimals(totalTokenSupply, decimals);
           // 锁仓量 $
@@ -169,9 +166,7 @@ class UpdateCache extends Subscription {
               chainId: '42',
             },
           });
-          if (now !== null) {
-            return;
-          }
+          if (now !== null) return;
           // 插入数据库
           await ctx.model.fundPool.create(info);
         });
@@ -179,7 +174,6 @@ class UpdateCache extends Subscription {
     } catch (error) {
       console.log(error, '======error');
     }
-    wait = false;
   }
 }
 

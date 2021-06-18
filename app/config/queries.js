@@ -12,8 +12,8 @@ function queryFundPools() {
       fundPools {
         id
         token ${token}
-        max
         startupTime
+        totalUserProfit
       }
     }
   `;

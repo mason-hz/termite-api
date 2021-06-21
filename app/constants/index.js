@@ -11,12 +11,9 @@ const config = {
   ...defaultConfig,
   apolloUrl: 'https://api.thegraph.com/subgraphs/name/zhxymh/svault-kovan',
 
-  Controller: '0xd98cf5C109aA130556eb81344c6303B6fe99f722',
-  SVaultNetValue: '0x2A28F3Dc81869Ce0dE70edC27777fbB5189c0f72',
-  PriceView: '0x9219f24F6B7D5AccF6C6d34044937EF882948b1e',
-
-  blockDay: 21600,
-  blockPerYear: 21600 * 365,
+  Controller: '0x4d706BEe4CAE123a4b33EB919D6523eFB2C1C173',
+  SVaultNetValue: '0xC530D5561DEF36BA859982585f28a81f20B2Ce20',
+  PriceView: '0x3D892a7b6E04E4B3Ed786F6438B8e6d2a9F568bb',
   fundPoolsDBName: 'fund_pools',
 };
 

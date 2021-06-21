@@ -9,7 +9,7 @@ const defaultConfig = {
 
 const config = {
   ...defaultConfig,
-  apolloUrl: 'https://api.thegraph.com/subgraphs/name/zhxymh/svault-kovan',
+  apolloUrl: 'https://api.thegraph.com/subgraphs/name/zhxymh/svault',
 
   Controller: '0x4d706BEe4CAE123a4b33EB919D6523eFB2C1C173',
   SVaultNetValue: '0xC530D5561DEF36BA859982585f28a81f20B2Ce20',

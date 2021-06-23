@@ -21,9 +21,9 @@ const previewConfig = {
   ...defaultConfig,
   apolloUrl: 'https://api.thegraph.com/subgraphs/name/zhxymh/termite-kovan',
 
-  Controller: '0x10Bb968006b1eF671dC9261C9477A5827c1ad69C',
-  SVaultNetValue: '0xEf7D9773820371eE953c03d7eC62B7E41985ec8F',
-  PriceView: '0x250d9e491c6cC11A9A413492a980FD638BF4145F',
+  Controller: '0x7818884BD0Dc4ffD717074a30248A14b8eb3bb55',
+  SVaultNetValue: '0x562035B58c053b0Dc05C72FfF87AFCF52Db3f379',
+  PriceView: '0x23a6689E396de01386C76F4aFec0001b6658D72D',
   fundPoolsDBName: 'preview_fund_pools',
 };
 

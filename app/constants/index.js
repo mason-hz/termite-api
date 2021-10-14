@@ -13,7 +13,7 @@ const kovanDefaultConfig = {
   rpcUrl: 'https://eth-kovan.alchemyapi.io/v2/xySGYPfffRK4wIUO1AqWgwgi2-Q2O1wy',
   blockDay: 21600,
   blockPerYear: 21600 * 365,
-  USDT_DECIMALS: 6,
+  USDT_DECIMALS: 18,
 };
 
 const kovanConfig = {

@@ -116,6 +116,29 @@ function getDayProfit(pre, c) {
   if (!pre) return bigC.toFixed();
   return bigC.minus(pre).toFixed();
 }
+
+function parseNetValues(valuesInView, preValuesInView) {
+  const { netValues, netValuesNew } = valuesInView || {};
+  const values = netValuesNew
+    ? netValuesNew.map((i, k) => ({
+        ...netValues[k],
+        totalTokens: i.totalTokens,
+        totalTokensInUSD: i.totalTokensInUSD,
+      }))
+    : undefined;
+
+  const { netValues: netValuesPre, netValuesNew: netValuesNewPre } =
+    preValuesInView || {};
+
+  const preValues = netValuesNewPre
+    ? netValuesNewPre.map((i, k) => ({
+        ...netValuesPre[k],
+        totalTokens: i.totalTokens,
+        totalTokensInUSD: i.totalTokensInUSD,
+      }))
+    : undefined;
+  return [values, preValues];
+}
 module.exports = {
   getUTCWeekAgoTime,
   divDecimals,
@@ -129,4 +152,5 @@ module.exports = {
   getCurrentNetValue,
   getFundPoolAPY,
   getDayProfit,
+  parseNetValues,
 };

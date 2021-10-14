@@ -7,6 +7,7 @@ const {
   getCurrentNetValue,
   getNetValue,
   getFundPoolAPY,
+  parseNetValues,
 } = require('../utils');
 const { web3 } = require('../config/contract');
 const ContractBasic = require('../utils/contract');
@@ -31,8 +32,8 @@ class HomeController extends Controller {
     const ctx = this.ctx;
     try {
       const {
-        id = '0xee69707feb63b799d018ad3bd9285d39eb7ca6ae',
-        startupTime = '1623836432',
+        id = '0xbcb991a18d968ac2e315c80611eec2b50eadefce',
+        startupTime = '1634181396',
       } = ctx.request.query;
       const dayTime = getUTCDayTime();
       const latestBlockNumber = await web3.eth.getBlockNumber();
@@ -46,10 +47,10 @@ class HomeController extends Controller {
         contractABI: fundPoolABI,
         contractAddress: id,
       });
-      const [values, preValues, totalShares, preTotalShares] =
+      const [valuesInView, preValuesInView, totalShares, preTotalShares] =
         await Promise.all([
-          netValueContract.callViewMethod('getNetValues'),
-          netValueContract.callViewMethod('getNetValues', undefined, {
+          netValueContract.callViewMethod('getNetValuesInView'),
+          netValueContract.callViewMethod('getNetValuesInView', undefined, {
             defaultBlock: preBlock,
           }),
           contract.callViewMethod('totalShares'),
@@ -57,6 +58,7 @@ class HomeController extends Controller {
             defaultBlock: preBlock,
           }),
         ]);
+      const [values, preValues] = parseNetValues(valuesInView, preValuesInView);
       const netValues = getCurrentNetValue(values, id);
       const preNetValues = getCurrentNetValue(preValues, id);
 
@@ -72,6 +74,9 @@ class HomeController extends Controller {
       ).toFixed();
       const fundPoolAPY = getFundPoolAPY(preNetValue, netValue, 7, startupTime);
       // const fundPool = await ctx.model.fundPool.findAll();
+
+      const { netValues: viewNetValues, netValuesNew } = valuesInView || {};
+
       this.sendBody({
         latestBlockNumber,
         dayTime,
@@ -85,6 +90,8 @@ class HomeController extends Controller {
         fundPoolAPY,
         SVaultNetValue,
         TERMITE_ENV: process.env.TERMITE_ENV,
+        viewNetValues: viewNetValues.map(i => ({ totalTokens: i.totalTokens })),
+        netValuesNew: netValuesNew.map(i => ({ totalTokens: i.totalTokens })),
       });
     } catch (error) {
       this.error(error);

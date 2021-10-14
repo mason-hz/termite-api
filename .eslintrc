@@ -2,6 +2,8 @@
   "parser": "babel-eslint",
   "extends": "eslint-config-egg",
   "rules": {
-    "array-bracket-spacing":"off"
+    "array-bracket-spacing": "off",
+    "space-before-function-paren": 0,
+    "indent": "off"
   }
 }

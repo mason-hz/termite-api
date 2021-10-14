@@ -3,7 +3,13 @@
 const { KovanSVaultClient } = require('../config/clients');
 const { queryFundPools } = require('../config/queries');
 const { SVaultNetValueABI, fundPoolABI, PriceViewABI } = require('../abis');
-const { SVaultNetValue, PriceView, blockDay } = require('../constants');
+const {
+  SVaultNetValue,
+  PriceView,
+  blockDay,
+  USDT_DECIMALS,
+  CHAIN_ID,
+} = require('../constants');
 const ContractBasic = require('../utils/contract');
 const {
   getCurrentNetValue,
@@ -14,6 +20,7 @@ const {
   getFundPoolAPY,
   getDayProfit,
   getUTCDayTime,
+  parseNetValues,
 } = require('../utils');
 const Subscription = require('egg').Subscription;
 const { web3 } = require('../config/contract');
@@ -43,10 +50,21 @@ class UpdateCache extends Subscription {
       // 七天前区块
       const preBlock = latestBlockNumber - 7 * blockDay;
 
-      const [values, preValues, result] = await Promise.all([
-        netValueContract.callViewMethod('getNetValues'),
-        // 七天前净值
-        netValueContract.callViewMethod('getNetValues', undefined, {
+      // const [values, preValues, result] = await Promise.all([
+      //   netValueContract.callViewMethod('getNetValues'),
+      //   // 七天前净值
+      //   netValueContract.callViewMethod('getNetValues', undefined, {
+      //     defaultBlock: preBlock,
+      //   }),
+      //   KovanSVaultClient.query({
+      //     query: queryFundPools(),
+      //     fetchPolicy: 'network-only',
+      //   }),
+      // ]);
+
+      const [valuesInView, preValuesInView, result] = await Promise.all([
+        netValueContract.callViewMethod('getNetValuesInView'),
+        netValueContract.callViewMethod('getNetValuesInView', undefined, {
           defaultBlock: preBlock,
         }),
         KovanSVaultClient.query({
@@ -54,6 +72,9 @@ class UpdateCache extends Subscription {
           fetchPolicy: 'network-only',
         }),
       ]);
+
+      const [values, preValues] = parseNetValues(valuesInView, preValuesInView);
+
       const time = getUTCDayTime();
       const { fundPools } = result.data;
       if (fundPools) {
@@ -99,7 +120,7 @@ class UpdateCache extends Subscription {
           ).toFixed();
 
           // 价格
-          const tokenPrice = divDecimals(price, 6);
+          const tokenPrice = divDecimals(price, USDT_DECIMALS);
           // token总锁仓量
           const totalValueLocked = divDecimals(totalTokenSupply, decimals);
           // 锁仓量 $
@@ -107,7 +128,7 @@ class UpdateCache extends Subscription {
           const info = {
             time,
             address: id,
-            chainId: '42',
+            chainId: CHAIN_ID,
             totalDeposit,
             netValue,
             totalProfit: profit,
@@ -116,7 +137,7 @@ class UpdateCache extends Subscription {
             where: {
               time: getUTCYesterdayTime(),
               address: id,
-              chainId: '42',
+              chainId: CHAIN_ID,
             },
           });
           if (yesterdayFundPool !== null) {
@@ -126,7 +147,7 @@ class UpdateCache extends Subscription {
             //   where: {
             //     time: getUTCWeekAgoTime(),
             //     address: id,
-            //     chainId: '42',
+            //     chainId: CHAIN_ID,
             //   },
             // });
             // // 有一周前的数据
@@ -136,7 +157,7 @@ class UpdateCache extends Subscription {
             //   const firstFundPool = await ctx.model.fundPool.findOne({
             //     where: {
             //       address: id,
-            //       chainId: '42',
+            //       chainId: CHAIN_ID,
             //     },
             //   });
             //   // 有第一条数据
@@ -163,7 +184,7 @@ class UpdateCache extends Subscription {
             where: {
               time,
               address: id,
-              chainId: '42',
+              chainId: CHAIN_ID,
             },
           });
           if (now !== null) return;

@@ -12,8 +12,8 @@ module.exports = appInfo => {
    **/
   const config = (exports = {
     sequelize: {
-      username: 'debian-sys-maint',
-      password: 'TFH3i5buJM7p5sTY',
+      username: 'root',
+      password: 'hoopox1616',
       database: 'termite_db',
       host: '127.0.0.1',
       dialect: 'mysql',

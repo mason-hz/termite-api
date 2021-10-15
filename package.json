@@ -43,6 +43,7 @@
     "restart:preview": "npm run stop:preview && npm run start:preview",
     "dev": "egg-bin dev",
     "dev:preview": "TERMITE_ENV=preview egg-bin dev",
+    "dev:bsc": "TERMITE_ENV=bsc egg-bin dev",
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",
     "test-local": "egg-bin test",

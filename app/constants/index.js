@@ -10,6 +10,7 @@ const bscConfig = {
   SVaultNetValue: '0x569C682d11eE4550aF79B09F9870384b4c5B7510',
   PriceView: '0xFE8D2f0259cc7c26133A82C7A231605A8D77cf9a',
   fundPoolsDBName: 'fund_pools',
+  apolloUrl: 'https://api.thegraph.com/subgraphs/name/termite-finance/termite-bsc',
 };
 
 const kovanDefaultConfig = {

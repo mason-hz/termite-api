@@ -6,11 +6,11 @@ const bscConfig = {
   blockDay: 28800,
   blockPerYear: 28800 * 365,
   USDT_DECIMALS: 18,
-  Controller: '0x53285424353633A38EEAACE94041649729426066',
-  SVaultNetValue: '0x569C682d11eE4550aF79B09F9870384b4c5B7510',
-  PriceView: '0xFE8D2f0259cc7c26133A82C7A231605A8D77cf9a',
+  Controller: '0x3c914afFc9329e3547A6e7C7c95Aa9B952678D7D',
+  SVaultNetValue: '0x475d01b27fa7c2a9520d388eff23a7db09c31613',
+  PriceView: '0xc790baa68d3a38bad456a2d8f53a41b7812c3d27',
   fundPoolsDBName: 'fund_pools',
-  apolloUrl: 'https://api.thegraph.com/subgraphs/name/termite-finance/termite-bsc',
+  apolloUrl: 'https://api.thegraph.com/subgraphs/name/termite-finance/termite-bsc-v1',
 };
 
 const kovanDefaultConfig = {
